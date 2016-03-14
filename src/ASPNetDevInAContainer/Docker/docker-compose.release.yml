@@ -1,0 +1,7 @@
+aspnetdevinacontainer:
+  build: ..
+  dockerfile: Docker/Dockerfile.release
+  ports:
+    - "${ASPNETDEVINACONTAINER_PORT}:${ASPNETDEVINACONTAINER_PORT}"
+  environment:
+    - SERVER.URLS=http://*:${ASPNETDEVINACONTAINER_PORT}
