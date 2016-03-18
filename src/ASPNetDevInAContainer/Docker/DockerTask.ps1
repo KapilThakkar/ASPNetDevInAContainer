@@ -1,19 +1,18 @@
 Param(
-    [Parameter(ParameterSetName = "Build", Mandatory = $True)]
+    [Parameter(ParameterSetName = "Build", Position = 0, Mandatory = $True)]
     [switch]$Build,
-    [Parameter(ParameterSetName = "Clean", Mandatory = $True)]
+    [Parameter(ParameterSetName = "Clean", Position = 0, Mandatory = $True)]
     [switch]$Clean,
-    [Parameter(ParameterSetName = "Run", Mandatory = $True)]
+    [Parameter(ParameterSetName = "Run", Position = 0, Mandatory = $True)]
     [switch]$Run,
     [parameter(ParameterSetName = "Clean", Position = 1, Mandatory = $True)]
     [parameter(ParameterSetName = "Build", Position = 1, Mandatory = $True)]
     [parameter(ParameterSetName = "Run", Position = 1, Mandatory = $True)]
     [ValidateNotNullOrEmpty()]
     [String]$Environment,
-    [parameter(ParameterSetName = "Clean", Position = 2, Mandatory = $True)]
-    [parameter(ParameterSetName = "Build", Position = 2, Mandatory = $True)]
-    [parameter(ParameterSetName = "Run", Position = 2, Mandatory = $True)]
-    [ValidateNotNullOrEmpty()]
+    [parameter(ParameterSetName = "Clean", Position = 2, Mandatory = $False)]
+    [parameter(ParameterSetName = "Build", Position = 2, Mandatory = $False)]
+    [parameter(ParameterSetName = "Run", Position = 2, Mandatory = $False)]
     [String]$Machine,
     [parameter(ParameterSetName = "Clean", Position = 3, Mandatory = $False)]
     [parameter(ParameterSetName = "Build", Position = 3, Mandatory = $False)]
@@ -22,9 +21,14 @@ Param(
     [String]$ProjectFolder = "$(Get-Location)",
     [parameter(ParameterSetName = "Build", Position = 4, Mandatory = $False)]
     [switch]$NoCache,
+    [parameter(ParameterSetName = "Build", Position = 5, Mandatory = $False)]
     [parameter(ParameterSetName = "Run", Position = 4, Mandatory = $False)]
     [ValidateNotNullOrEmpty()]
-    [String]$Port = 5000
+    [String]$ContainerPort = 5000,
+    [parameter(ParameterSetName = "Build", Position = 6, Mandatory = $False)]
+    [parameter(ParameterSetName = "Run", Position = 5, Mandatory = $False)]
+    [ValidateNotNullOrEmpty()]
+    [String]$HostPort = 80
 )
 
 $ErrorActionPreference = "Stop"
@@ -94,11 +98,11 @@ function Run () {
     $composeFileName = Join-Path $ProjectFolder (Join-Path Docker "docker-compose.$Environment.yml")
 
     if (Test-Path $composeFileName) {
-        $conflictingContainerIds = $(docker ps -a | select-string -pattern ":$Port->" | foreach { Write-Output $_.Line.split()[0] })
+        $conflictingContainerIds = $(docker ps -a | select-string -pattern ":$HostPort->" | foreach { Write-Output $_.Line.split()[0] })
 
         if ($conflictingContainerIds) {
             $conflictingContainerIds = $conflictingContainerIds -Join ' '
-            Write-Host "Stoping conflicting containers using port ${Port}"
+            Write-Host "Stopping conflicting containers using port $HostPort"
             cmd /c docker stop $conflictingContainerIds "2>&1"
         }
 
@@ -116,7 +120,12 @@ function Run () {
 
 # Opens the remote site
 function OpenSite () {
-    $uri = "http://$(docker-machine ip $(docker-machine active)):$Port"
+    if ([System.String]::IsNullOrWhiteSpace($Machine)) {
+        $uri = "http://docker.local:$HostPort"
+    }
+    else {
+        $uri = "http://$(docker-machine ip ${Machine}):$HostPort"
+    }
     Write-Host "Opening site $uri " -NoNewline
     $status = 0
 
@@ -138,8 +147,10 @@ function OpenSite () {
     Start-Process $uri
 }
 
+if (![System.String]::IsNullOrWhiteSpace($Machine)) {
 # Set the environment variables for the docker machine to connect to
-docker-machine.exe env $Machine --shell powershell | Invoke-Expression
+    docker-machine env $Machine --shell powershell | Invoke-Expression
+}
 
 # Need the full path of the project for mapping
 $ProjectFolder = Resolve-Path $ProjectFolder
@@ -164,7 +175,8 @@ $ProjectName = (Split-Path $ProjectFolder -Leaf).ToLowerInvariant()
 # Calculate the name of the image created by the compose file
 $ImageName = "${ProjectName}_aspnetdevinacontainer"
 
-$env:ASPNETDEVINACONTAINER_PORT = $Port
+$env:ASPNETDEVINACONTAINER_PORT = $ContainerPort
+$env:HOST_PORT = $HostPort
 
 # Call the correct functions for the parameters that were used
 if ($Clean) {
