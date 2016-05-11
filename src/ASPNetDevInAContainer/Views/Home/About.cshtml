@@ -1,7 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "About";
+    ViewData["Title"] = "Works On My Machine: About-Debugging";
 }
-<h2>@ViewData["Title"].</h2>
-<h3>@ViewData["Message"]</h3>
+<h2>
+    @ViewData["Title"]
+    <img src="~/images/DockerToolsForVSLogo.png" />
+</h2>
+<br />
+<b>HostName:</b> @ViewData["HOSTNAME"]<br />
+<b>Eastern Timezone:</b> @ViewData["TZINFO"]<br />
 
-<p>Use this area to provide additional information.</p>
+<b>ASP.NET Hosting Environment:</b> @ViewData["HOSTING_ENVIRONMENT"]<br />
+
+<h3>Environment Variables:</h3>
+@Html.Raw(ViewData["ENV_VARS"])
+<br />
+<p>Running in a container </p>
