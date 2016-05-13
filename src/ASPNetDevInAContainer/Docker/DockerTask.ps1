@@ -30,7 +30,7 @@ Removes any conflicting containers running on the same port, then instances the 
 Specifies the configuration under which the project will be built and run (Debug or Release).
 
 .PARAMETER Machine
-Specifies the docker machine name to connect to.
+Specifies the docker machine name to connect to. This is optional and if left blank or not provided it will use the currently configured docker host, or if no host is set, will use the Docker for Windows beta.
 
 .PARAMETER ProjectFolder
 Specifies the project folder, defaults to the parent of the directory containing this script.
@@ -57,8 +57,12 @@ Specifies the command to run in the container.
 None. You cannot pipe inputs to DockerTask.
 
 .EXAMPLE
-When invoked from the root directory of your project, will compose up the project into the docker-machine instance named 'default', but won't open a browser.
-C:\PS> .\Docker\DockerTask.ps1 -Run -Environment Debug -Machine default -OpenSite $False
+Compiles the project and builds the docker image using the currently configured docker host, or when no host is set, used for the Docker for Windows beta. To see the container running, use the -Run parameter
+C:\PS> .\Docker\DockerTask.ps1 -Build -Environment Release
+
+.EXAMPLE
+Will use 'docker-compose up' on the project, using the docker-machine instance named 'default', and opens a browser once the container responds. Assumes -Build was previously run. For the Docker for Windows Beta, remove the -Machine parameter or pass '' as the value.
+C:\PS> .\Docker\DockerTask.ps1 -Run -Environment Release -Machine 'default'
 
 .LINK
 http://aka.ms/DockerToolsForVS
@@ -292,7 +296,7 @@ function WaitForUrl ([string]$uri) {
     $count = 0
 
     #Check if the site is available
-    while ($status -ne 200 -and $count -lt 300) {
+    while ($status -ne 200 -and $count -lt 120) {
         try {
             $response = Invoke-WebRequest -Uri $uri -Headers @{"Cache-Control"="no-cache";"Pragma"="no-cache"} -UseBasicParsing
             $status = [int]$response.StatusCode
@@ -300,7 +304,7 @@ function WaitForUrl ([string]$uri) {
         catch [System.Net.WebException] { }
         if($status -ne 200) {
             Write-Host "." -NoNewline
-            # Wait Time max. 5 minutes (300 sec.)
+            # Wait Time max. 2 minutes (120 sec.)
             Start-Sleep 1
             $count += 1
         }

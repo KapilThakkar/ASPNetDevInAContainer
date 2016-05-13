@@ -1,31 +1,32 @@
 {
   "dependencies": {
     "Microsoft.NETCore.App": {
-      "version": "1.0.0-rc2-3002426",
+      "version": "1.0.0-rc2-3002700",
       "type": "platform"
     },
-    "dotnet-razor-tooling": {
-      "version": "1.0.0-rc2-20634",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0-rc2-20875",
+    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20875",
+    "Microsoft.AspNetCore.Razor.Tools": {
+      "version": "1.0.0-preview1-20875",
       "type": "build"
     },
-    "Microsoft.AspNetCore.Diagnostics": "1.0.0-rc2-20634",
-    "Microsoft.AspNetCore.Mvc": "1.0.0-rc2-20634",
-    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20634",
-    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20634",
-    "Microsoft.AspNetCore.StaticFiles": "1.0.0-rc2-20634",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20634",
-    "Microsoft.Extensions.Logging": "1.0.0-rc2-20634",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-20634",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-20634",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc2-20634"
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0-rc2-20875",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-20875",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0-rc2-20875",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc2-20875",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc2-20875",
+    "Microsoft.Extensions.Logging": "1.0.0-rc2-20875",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-20875",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-20875",
+    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc2-20875"
   },
   "tools": {
-    "dotnet-razor-tooling": {
-      "version": "1.0.0-rc2-20634",
+    "Microsoft.AspNetCore.Razor.Tools": {
+      "version": "1.0.0-preview1-20875",
       "imports": "portable-net45+win8+dnxcore50"
     },
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": {
-      "version": "1.0.0-rc2-20634",
+      "version": "1.0.0-preview1-20875",
       "imports": "portable-net45+win8+dnxcore50"
     }
   },
@@ -38,27 +39,24 @@
       ]
     }
   },
-  "compilationOptions": {
+  "buildOptions": {
     "emitEntryPoint": true,
     "preserveCompilationContext": true,
     "debugType": "portable"
   },
   "runtimeOptions": {
-    "configProperties": {
-      "System.GC.Server": true
-    }
+    "gcServer": true
   },
-  "content": [
-    "wwwroot",
-    "Views",
-    "appsettings.json",
-    "web.config",
-    "Docker",
-    ".dockerignore"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "publishOptions": {
+    "include": [
+      "wwwroot",
+      "Views",
+      "appsettings.json",
+      "web.config",
+      "Docker",
+      ".dockerignore"
+    ]
+  },
   "scripts": {
     "prepublish": [
       "npm install",

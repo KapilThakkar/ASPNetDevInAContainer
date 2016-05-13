@@ -5,7 +5,8 @@
          otherwise the target SetDockerProps will set it based on $(ActiveDebugProfile) -->
     <!--<DockerBuild Condition=" '$(DockerBuild)'=='' ">True</DockerBuild> -->
 
-    <!-- Use this property to change the docker host that is used by this project (Note: you need to restart VS after changing this property) -->
+    <!-- Use this property to change the docker host that is used by this project. Delete default, leaving the value blank for the Docker for Windows beta
+        (Note: you need to restart VS after changing this property) -->
     <DockerMachineName Condition=" '$(DockerMachineName)'=='' "></DockerMachineName>
 
     <!-- Use this property to change the port exposed by the container (Note: you need to restart VS after changing this property) -->

@@ -1,4 +1,4 @@
-FROM microsoft/dotnet-preview
+FROM microsoft/dotnet:1.0.0-rc2-core
 
 # Copy the Debugger
 COPY /clrdbg /clrdbg

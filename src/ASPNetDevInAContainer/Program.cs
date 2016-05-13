@@ -14,9 +14,9 @@ namespace ASPNetDevInAContainer
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseDefaultHostingConfiguration(args)
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .UseUrls(Environment.GetEnvironmentVariable("ASPNETCORE_SERVER.URLS"))
                 .Build();
 
             host.Run();
